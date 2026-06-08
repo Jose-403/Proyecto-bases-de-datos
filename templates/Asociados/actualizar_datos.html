@@ -1,0 +1,126 @@
+{% extends "asociado/base.html" %}
+
+{% block title %}Actualizar datos — COOVALLUNA{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <header class="panel-header">
+        <h2>Solicitar cambio de datos</h2>
+        <p class="panel-subtitle">
+            Envíe una solicitud para actualizar su teléfono, correo o dirección.
+            Los cambios quedan en estado <strong>pendiente de aprobación</strong>
+            hasta que un asesor los confirme. No puede modificar sus datos directamente.
+        </p>
+    </header>
+
+    {% if associate %}
+    <div class="associate-summary">
+        Datos actuales —
+        Teléfono: <strong>{{ associate.telefono or 'No registrado' }}</strong>
+        — Correo: <strong>{{ associate.email or 'No registrado' }}</strong>
+        — Dirección: <strong>{{ associate.direccion or 'No registrada' }}</strong>
+    </div>
+
+    <form method="POST" action="{{ url_for('asociado_actualizar_datos') }}" class="agency-form">
+        <div class="form-grid statement-grid">
+            <div class="form-group">
+                <label for="telefono">Teléfono solicitado <span class="required">*</span></label>
+                <input
+                    type="text"
+                    id="telefono"
+                    name="telefono"
+                    value="{{ form_data.get('telefono', associate.telefono or '') }}"
+                    required
+                    {% if has_pending %}disabled{% endif %}
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="correo">Correo electrónico solicitado <span class="required">*</span></label>
+                <input
+                    type="email"
+                    id="correo"
+                    name="correo"
+                    value="{{ form_data.get('correo', associate.email or '') }}"
+                    required
+                    {% if has_pending %}disabled{% endif %}
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="direccion">Dirección de residencia solicitada <span class="required">*</span></label>
+                <input
+                    type="text"
+                    id="direccion"
+                    name="direccion"
+                    value="{{ form_data.get('direccion', associate.direccion or '') }}"
+                    required
+                    {% if has_pending %}disabled{% endif %}
+                >
+            </div>
+        </div>
+
+        {% if has_pending %}
+        <p class="form-warning">
+            Tiene una solicitud pendiente de aprobación. Debe esperar la respuesta del asesor
+            antes de enviar otra.
+        </p>
+        <button type="button" class="btn btn-save" disabled>Solicitar</button>
+        {% else %}
+        <button type="submit" class="btn btn-save">Solicitar</button>
+        {% endif %}
+    </form>
+    {% else %}
+    <p class="empty-state">
+        Su usuario no está vinculado a un asociado. Contacte a la cooperativa para activar su acceso.
+    </p>
+    {% endif %}
+</section>
+
+<section class="panel">
+    <header class="panel-header">
+        <h2>Solicitudes de cambio de datos</h2>
+        <p class="panel-subtitle">Historial y estado de sus solicitudes.</p>
+    </header>
+
+    {% if requests %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Fecha</th>
+                <th>Teléfono</th>
+                <th>Correo</th>
+                <th>Dirección</th>
+                <th>Estado</th>
+                <th>Resolución</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in requests %}
+            <tr>
+                <td>{{ item.id_solicitud }}</td>
+                <td>{{ item.fecha_solicitud }}</td>
+                <td>{{ item.telefono_solicitado or '—' }}</td>
+                <td>{{ item.correo_solicitado or '—' }}</td>
+                <td>{{ item.direccion_solicitada or '—' }}</td>
+                <td>{{ item.estado_label }}</td>
+                <td>
+                    {% if item.fecha_resolucion %}
+                    {{ item.fecha_resolucion }}
+                    {% if item.comentario_asesor %}
+                    — {{ item.comentario_asesor }}
+                    {% endif %}
+                    {% else %}
+                    —
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty-state">No ha enviado solicitudes de actualización de datos.</p>
+    {% endif %}
+</section>
+{% endblock %}

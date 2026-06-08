@@ -1,0 +1,29 @@
+{% extends "asesor/base.html" %} {% block title %}Registrar Beneficiario — COOVALLUNA{% endblock %} {% block content %}
+Registrar Beneficiario
+Máximo {{ max_beneficiarios }} beneficiarios por asociado. La suma de porcentajes debe ser exactamente 100%.
+
+Cédula del asociado * 
+{{ form_data.get('cedula_asociado', '') }}
+Buscar asociado
+{% if found_associate %}
+{{ found_associate.nombre }} {{ found_associate.apellido }} — Cédula {{ found_associate.cedula }} — Estado {{ found_associate.estado_label }}
+{% endif %} {% if existing_beneficiaries %}
+Este asociado ya tiene beneficiarios registrados. Al guardar, se reemplazará la distribución actual.
+{% for beneficiary in existing_beneficiaries %} {% endfor %}
+Documento	Nombre	Parentesco	Porcentaje
+{{ beneficiary.documento }}	{{ beneficiary.nombre }} {{ beneficiary.apellido }}	{{ beneficiary.parentesco_label }}	{{ beneficiary.porcentaje }}%
+{% endif %}
+Distribución de beneficiarios
+{% for index in range(1, max_beneficiarios + 1) %}
+Beneficiario {{ index }}
+Documento 
+{{ form_data.get('documento_' ~ index, '') }}
+Porcentaje (%) 
+Ej: 50
+Nombre 
+{{ form_data.get('nombre_' ~ index, '') }}
+Apellido 
+{{ form_data.get('apellido_' ~ index, '') }}
+Parentesco 
+Seleccione
+{% endfor %}

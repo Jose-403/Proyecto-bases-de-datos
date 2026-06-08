@@ -1,0 +1,151 @@
+{% extends "asociado/base.html" %}
+
+{% block title %}Descargar extractos — COOVALLUNA{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <header class="panel-header">
+        <h2>Descargar extracto</h2>
+        <p class="panel-subtitle">
+            Genere el extracto de su cuenta de ahorro o el estado de cuenta de sus créditos
+            en formato PDF o CSV. El documento incluirá sus datos, el período consultado
+            y el nombre de la cooperativa.
+        </p>
+    </header>
+
+    {% if associate %}
+    <div class="associate-summary">
+        Asociado <strong>{{ associate.nombre }} {{ associate.apellido }}</strong>
+        — Cédula <strong>{{ associate.cedula }}</strong>
+    </div>
+    {% endif %}
+
+    <form id="export-form" class="agency-form" oninput="updateExportLinks()">
+        <div class="form-grid statement-grid">
+            <div class="form-group">
+                <label for="tipo_documento">Tipo de documento <span class="required">*</span></label>
+                <select id="tipo_documento" name="tipo_documento" required onchange="toggleDocumentFields()">
+                    <option value="ahorro"
+                        {% if form_data.get('tipo_documento', 'ahorro') == 'ahorro' %}selected{% endif %}>
+                        Extracto cuenta de ahorro
+                    </option>
+                    <option value="credito"
+                        {% if form_data.get('tipo_documento') == 'credito' %}selected{% endif %}>
+                        Estado de cuenta de crédito
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group" id="ahorro-field">
+                <label for="numero_cuenta">Cuenta de ahorro</label>
+                <select id="numero_cuenta" name="numero_cuenta" {% if not associate_accounts %}disabled{% endif %}>
+                    <option value="">Seleccione la cuenta</option>
+                    {% for account in associate_accounts %}
+                    <option value="{{ account.numero_cuenta }}"
+                        {% if form_data.get('numero_cuenta') == account.numero_cuenta %}selected{% endif %}>
+                        {{ account.numero_cuenta }} — {{ account.agencia_nombre }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group" id="credito-field">
+                <label for="numero_radicado">Crédito</label>
+                <select id="numero_radicado" name="numero_radicado" {% if not active_credits %}disabled{% endif %}>
+                    <option value="">Seleccione el crédito</option>
+                    {% for credit in active_credits %}
+                    <option value="{{ credit.numero_radicado }}"
+                        {% if form_data.get('numero_radicado') == credit.numero_radicado %}selected{% endif %}>
+                        {{ credit.numero_radicado }} — {{ credit.linea_label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="fecha_desde">Fecha desde</label>
+                <input
+                    type="date"
+                    id="fecha_desde"
+                    name="fecha_desde"
+                    value="{{ form_data.get('fecha_desde', '') }}"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="fecha_hasta">Fecha hasta</label>
+                <input
+                    type="date"
+                    id="fecha_hasta"
+                    name="fecha_hasta"
+                    value="{{ form_data.get('fecha_hasta', '') }}"
+                >
+            </div>
+        </div>
+
+        <div class="report-actions">
+            <a id="btn-pdf" class="btn btn-export" href="#">Descargar PDF</a>
+            <a id="btn-csv" class="btn btn-export" href="#">Descargar CSV</a>
+        </div>
+    </form>
+</section>
+
+<section class="panel">
+    <header class="panel-header">
+        <h2>Solicitudes de descarga</h2>
+        <p class="panel-subtitle">Historial reciente de documentos generados en esta sesión.</p>
+    </header>
+
+    {% if download_history %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Documento</th>
+                <th>Referencia</th>
+                <th>Período</th>
+                <th>Formato</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in download_history %}
+            <tr>
+                <td>{{ item.fecha }}</td>
+                <td>{{ item.documento }}</td>
+                <td>{{ item.referencia }}</td>
+                <td>{{ item.periodo }}</td>
+                <td>{{ item.formato }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty-state">Aún no ha generado descargas en esta sesión.</p>
+    {% endif %}
+</section>
+
+<script>
+function toggleDocumentFields() {
+    const tipo = document.getElementById("tipo_documento").value;
+    document.getElementById("ahorro-field").style.display = tipo === "ahorro" ? "block" : "none";
+    document.getElementById("credito-field").style.display = tipo === "credito" ? "block" : "none";
+    updateExportLinks();
+}
+
+function updateExportLinks() {
+    const form = document.getElementById("export-form");
+    const params = new URLSearchParams(new FormData(form));
+    const tipo = params.get("tipo_documento");
+    if (tipo === "ahorro") {
+        params.delete("numero_radicado");
+    } else {
+        params.delete("numero_cuenta");
+    }
+    const query = params.toString();
+    document.getElementById("btn-pdf").href = "{{ url_for('asociado_descargar_extracto_pdf') }}?" + query;
+    document.getElementById("btn-csv").href = "{{ url_for('asociado_descargar_extracto_csv') }}?" + query;
+}
+
+toggleDocumentFields();
+</script>
+{% endblock %}

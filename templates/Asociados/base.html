@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}COOVALLUNA{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body class="admin-body">
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="brand">Coovalluna</h1>
+                <p class="role-label">Asociado</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <span class="nav-link disabled">Mi información</span>
+                <a href="{{ url_for('asociado_mis_ahorros') }}"
+                   class="nav-link {% if active_page == 'mis_ahorros' %}active{% endif %}">
+                    Mis ahorros
+                </a>
+                <a href="{{ url_for('asociado_mis_creditos') }}"
+                   class="nav-link {% if active_page == 'mis_creditos' %}active{% endif %}">
+                    Mis créditos
+                </a>
+                <a href="{{ url_for('asociado_descargar_extractos') }}"
+                   class="nav-link {% if active_page == 'descargar_extractos' %}active{% endif %}">
+                    Descargar extractos
+                </a>
+                <a href="{{ url_for('asociado_actualizar_datos') }}"
+                   class="nav-link {% if active_page == 'actualizar_datos' %}active{% endif %}">
+                    Actualizar datos
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="nav-link logout-link">Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="admin-messages">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>
