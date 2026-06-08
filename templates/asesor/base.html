@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}COOVALLUNA{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body class="admin-body">
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="brand">Coovalluna</h1>
+                <p class="role-label">Asesor / Cajero</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-section">Asociados</p>
+                <a href="{{ url_for('asesor_registrar_asociado') }}"
+                   class="nav-link {% if active_page == 'registrar_asociado' %}active{% endif %}">
+                    Reg. Asociado
+                </a>
+                <a href="{{ url_for('asesor_registrar_beneficiario') }}"
+                   class="nav-link {% if active_page == 'registrar_beneficiario' %}active{% endif %}">
+                    Beneficios
+                </a>
+                <a href="{{ url_for('asesor_solicitudes_datos') }}"
+                   class="nav-link {% if active_page == 'solicitudes_datos' %}active{% endif %}">
+                    Solicitudes datos
+                </a>
+
+                <p class="nav-section">Productos</p>
+                <a href="{{ url_for('asesor_cuentas_ahorro') }}"
+                   class="nav-link {% if active_page == 'cuentas_ahorro' %}active{% endif %}">
+                    Cuentas ahorro
+                </a>
+                <a href="{{ url_for('asesor_movimientos') }}"
+                   class="nav-link {% if active_page == 'movimientos' %}active{% endif %}">
+                    Movimientos
+                </a>
+                <a href="{{ url_for('asesor_radicar_credito') }}"
+                   class="nav-link {% if active_page == 'radicar_credito' %}active{% endif %}">
+                    Créditos
+                </a>
+                <a href="{{ url_for('asesor_pagos_cuotas') }}"
+                   class="nav-link {% if active_page == 'pagos_cuotas' %}active{% endif %}">
+                    Pagos cuotas
+                </a>
+
+                <p class="nav-section">Reportes</p>
+                <a href="{{ url_for('asesor_extracto_cuenta') }}"
+                   class="nav-link {% if active_page == 'extracto_cuenta' %}active{% endif %}">
+                    Extracto cuenta
+                </a>
+                <a href="{{ url_for('asesor_asociados_mora') }}"
+                   class="nav-link {% if active_page == 'asociados_mora' %}active{% endif %}">
+                    Asociados en mora
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="nav-link logout-link">Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="admin-messages">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>
