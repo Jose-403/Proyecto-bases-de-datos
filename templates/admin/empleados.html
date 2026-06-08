@@ -1,0 +1,158 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Empleados — COOVALLUNA{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <header class="panel-header">
+        <h2>Registrar Empleado</h2>
+    </header>
+
+    <form method="POST" action="{{ url_for('admin_empleados') }}" class="agency-form">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="cedula">Cédula <span class="required">*</span></label>
+                <input
+                    type="text"
+                    id="cedula"
+                    name="cedula"
+                    value="{{ form_data.get('cedula', '') }}"
+                    placeholder="Ej: 1234567890"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="nombre">Nombre <span class="required">*</span></label>
+                <input
+                    type="text"
+                    id="nombre"
+                    name="nombre"
+                    value="{{ form_data.get('nombre', '') }}"
+                    placeholder="Nombre del empleado"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="apellido">Apellido</label>
+                <input
+                    type="text"
+                    id="apellido"
+                    name="apellido"
+                    value="{{ form_data.get('apellido', '') }}"
+                    placeholder="Apellido del empleado"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="agencia_codigo">Agencia <span class="required">*</span></label>
+                <select id="agencia_codigo" name="agencia_codigo" required>
+                    <option value="">Seleccione una agencia</option>
+                    {% for agency in agencies %}
+                    <option value="{{ agency.codigo }}"
+                        {% if form_data.get('agencia_codigo') == agency.codigo %}selected{% endif %}>
+                        {{ agency.codigo }} — {{ agency.nombre }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="cargo">Cargo <span class="required">*</span></label>
+                <input
+                    type="text"
+                    id="cargo"
+                    name="cargo"
+                    value="{{ form_data.get('cargo', '') }}"
+                    placeholder="Ej: Asesor comercial"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="estado_laboral">Estado laboral <span class="required">*</span></label>
+                <select id="estado_laboral" name="estado_laboral" required>
+                    <option value="">Seleccione un estado</option>
+                    {% for estado in estados_laborales %}
+                    <option value="{{ estado }}"
+                        {% if form_data.get('estado_laboral') == estado %}selected{% endif %}>
+                        {{ estado }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="telefono">Teléfono</label>
+                <input
+                    type="text"
+                    id="telefono"
+                    name="telefono"
+                    value="{{ form_data.get('telefono', '') }}"
+                    placeholder="Número de contacto"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="fecha_ingreso">Fecha de ingreso</label>
+                <input
+                    type="date"
+                    id="fecha_ingreso"
+                    name="fecha_ingreso"
+                    value="{{ form_data.get('fecha_ingreso', '') }}"
+                >
+            </div>
+        </div>
+
+        {% if not agencies %}
+        <p class="form-warning">
+            Debe registrar al menos una agencia antes de poder asignar empleados.
+        </p>
+        {% endif %}
+
+        <button type="submit" class="btn btn-save" {% if not agencies %}disabled{% endif %}>
+            Guardar
+        </button>
+    </form>
+</section>
+
+<section class="panel">
+    <header class="panel-header">
+        <h2>Empleados registrados</h2>
+    </header>
+
+    {% if employees %}
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Cédula</th>
+                    <th>Nombre</th>
+                    <th>Agencia</th>
+                    <th>Cargo</th>
+                    <th>Estado laboral</th>
+                    <th>Teléfono</th>
+                    <th>Fecha ingreso</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.cedula }}</td>
+                    <td>{{ employee.nombre }}{% if employee.apellido %} {{ employee.apellido }}{% endif %}</td>
+                    <td>{{ employee.agency_codigo }} — {{ employee.agencia_nombre }}</td>
+                    <td>{{ employee.cargo }}</td>
+                    <td>{{ employee.estado_laboral }}</td>
+                    <td>{{ employee.telefono or '—' }}</td>
+                    <td>{{ employee.fecha_ingreso or '—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No hay empleados registrados aún.</p>
+    {% endif %}
+</section>
+{% endblock %}

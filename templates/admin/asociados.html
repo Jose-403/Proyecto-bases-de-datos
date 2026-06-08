@@ -1,0 +1,219 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Asociados — COOVALLUNA{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <header class="panel-header">
+        <h2>Datos del Asociado</h2>
+    </header>
+
+    <form method="POST" action="{{ url_for('admin_asociados') }}" class="agency-form">
+        <input type="hidden" name="action" value="register">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="cedula">Cédula <span class="required">*</span></label>
+                <input
+                    type="text"
+                    id="cedula"
+                    name="cedula"
+                    value="{{ form_data.get('cedula', '') }}"
+                    placeholder="Ej: 1234567890"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="nombre">Nombre <span class="required">*</span></label>
+                <input
+                    type="text"
+                    id="nombre"
+                    name="nombre"
+                    value="{{ form_data.get('nombre', '') }}"
+                    placeholder="Nombre del asociado"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="apellido">Apellido <span class="required">*</span></label>
+                <input
+                    type="text"
+                    id="apellido"
+                    name="apellido"
+                    value="{{ form_data.get('apellido', '') }}"
+                    placeholder="Apellido del asociado"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="tipo_asociado">Tipo de asociado <span class="required">*</span></label>
+                <select id="tipo_asociado" name="tipo_asociado" required>
+                    <option value="">Seleccione el tipo</option>
+                    {% for value, label in tipos_asociado.items() %}
+                    <option value="{{ value }}"
+                        {% if form_data.get('tipo_asociado') == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="direccion">Dirección</label>
+                <input
+                    type="text"
+                    id="direccion"
+                    name="direccion"
+                    value="{{ form_data.get('direccion', '') }}"
+                    placeholder="Dirección de residencia"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="telefono">Teléfono</label>
+                <input
+                    type="text"
+                    id="telefono"
+                    name="telefono"
+                    value="{{ form_data.get('telefono', '') }}"
+                    placeholder="Número de contacto"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">Correo electrónico</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value="{{ form_data.get('email', '') }}"
+                    placeholder="correo@ejemplo.com"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="fecha_afiliacion">Fecha de afiliación <span class="required">*</span></label>
+                <input
+                    type="date"
+                    id="fecha_afiliacion"
+                    name="fecha_afiliacion"
+                    value="{{ form_data.get('fecha_afiliacion', '') }}"
+                    required
+                >
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-save">Guardar</button>
+    </form>
+</section>
+
+<section class="panel">
+    <header class="panel-header">
+        <h2>Buscar Asociado</h2>
+    </header>
+
+    <form method="POST" action="{{ url_for('admin_asociados') }}" class="agency-form search-form">
+        <input type="hidden" name="action" value="search">
+        <div class="form-group">
+            <label for="search_cedula">Cédula del asociado</label>
+            <input
+                type="text"
+                id="search_cedula"
+                name="search_cedula"
+                value="{{ search_cedula }}"
+                placeholder="Ingrese la cédula para buscar"
+                required
+            >
+        </div>
+        <button type="submit" class="btn btn-save">Buscar</button>
+    </form>
+
+    {% if found_associate %}
+    <div class="associate-result">
+        <p class="result-label">Asociado encontrado:</p>
+        <div class="result-card">
+            <strong>{{ found_associate.nombre }} {{ found_associate.apellido }}</strong>
+            <span>Cédula: {{ found_associate.cedula }}</span>
+            <span>Tipo: {{ found_associate.tipo_label }}</span>
+            <span>Estado actual: {{ found_associate.estado_label }}</span>
+        </div>
+    </div>
+    {% endif %}
+</section>
+
+<section class="panel">
+    <header class="panel-header">
+        <h2>Cambiar estado de vinculación</h2>
+    </header>
+
+    <form method="POST" action="{{ url_for('admin_asociados') }}" class="agency-form">
+        <input type="hidden" name="action" value="change_status">
+        <input type="hidden" name="status_cedula" value="{{ status_cedula }}">
+
+        <div class="form-group">
+            <label for="estado_vinculacion">Nuevo estado</label>
+            <select id="estado_vinculacion" name="estado_vinculacion" required
+                {% if not found_associate %}disabled{% endif %}>
+                <option value="">Seleccione un estado</option>
+                {% for value, label in estados_vinculacion.items() %}
+                <option value="{{ value }}"
+                    {% if found_associate and found_associate.estado_vinculacion == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {% if not found_associate %}
+        <p class="form-warning">Primero busque un asociado para cambiar su estado de vinculación.</p>
+        {% endif %}
+
+        <button type="submit" class="btn btn-save" {% if not found_associate %}disabled{% endif %}>
+            Confirmar
+        </button>
+    </form>
+</section>
+
+<section class="panel">
+    <header class="panel-header">
+        <h2>Asociados registrados</h2>
+    </header>
+
+    {% if associates %}
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Cédula</th>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Estado</th>
+                    <th>Dirección</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Fecha afiliación</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for associate in associates %}
+                <tr>
+                    <td>{{ associate.cedula }}</td>
+                    <td>{{ associate.nombre }} {{ associate.apellido }}</td>
+                    <td>{{ associate.tipo_label }}</td>
+                    <td>{{ associate.estado_label }}</td>
+                    <td>{{ associate.direccion or '—' }}</td>
+                    <td>{{ associate.telefono or '—' }}</td>
+                    <td>{{ associate.email or '—' }}</td>
+                    <td>{{ associate.fecha_afiliacion }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No hay asociados registrados aún.</p>
+    {% endif %}
+</section>
+{% endblock %}

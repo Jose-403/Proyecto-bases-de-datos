@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Cambiar contraseña{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>Cambiar contraseña</h1>
+    <p class="subtitle">Debes actualizar tu contraseña temporal antes de continuar.</p>
+
+    <form method="POST" action="{{ url_for('change_password') }}" class="form">
+        <label for="current_password">Contraseña actual</label>
+        <input type="password" id="current_password" name="current_password" required autofocus>
+
+        <label for="new_password">Nueva contraseña</label>
+        <input type="password" id="new_password" name="new_password" placeholder="Mínimo 6 caracteres" required>
+
+        <label for="confirm_password">Confirmar nueva contraseña</label>
+        <input type="password" id="confirm_password" name="confirm_password" required>
+
+        <button type="submit" class="btn btn-primary">Actualizar contraseña</button>
+    </form>
+</section>
+{% endblock %}

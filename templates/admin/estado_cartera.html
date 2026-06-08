@@ -1,0 +1,108 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Estado cartera — COOVALLUNA{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <header class="panel-header">
+        <h2>Reporte de cartera por línea de estado</h2>
+    </header>
+
+    <form method="POST" action="{{ url_for('admin_estado_cartera') }}" class="agency-form">
+        <div class="filter-grid portfolio-filters">
+            <div class="form-group">
+                <label for="agency_codigo">Agencia</label>
+                <select id="agency_codigo" name="agency_codigo">
+                    <option value="">Todas las agencias</option>
+                    {% for agency in agencies %}
+                    <option value="{{ agency.codigo }}"
+                        {% if filters.agency_codigo == agency.codigo %}selected{% endif %}>
+                        {{ agency.codigo }} — {{ agency.nombre }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="fecha_desde">Fecha desde</label>
+                <input
+                    type="date"
+                    id="fecha_desde"
+                    name="fecha_desde"
+                    value="{{ filters.fecha_desde }}"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="fecha_hasta">Fecha hasta</label>
+                <input
+                    type="date"
+                    id="fecha_hasta"
+                    name="fecha_hasta"
+                    value="{{ filters.fecha_hasta }}"
+                >
+            </div>
+        </div>
+
+        <div class="report-actions">
+            <button type="submit" class="btn btn-save">Generar reporte</button>
+            {% if report %}
+            <a href="{{ url_for('admin_estado_cartera_export_csv', **filters) }}"
+               class="btn btn-export">Exportar CSV</a>
+            <a href="{{ url_for('admin_estado_cartera_export_pdf', **filters) }}"
+               class="btn btn-export">Exportar PDF</a>
+            {% else %}
+            <button type="button" class="btn btn-export" disabled>Exportar CSV</button>
+            <button type="button" class="btn btn-export" disabled>Exportar PDF</button>
+            {% endif %}
+        </div>
+    </form>
+</section>
+
+<section class="panel">
+    <header class="panel-header">
+        <h2>Reporte</h2>
+    </header>
+
+    {% if report %}
+        {% if report.groups %}
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Línea de crédito</th>
+                        <th>Estado</th>
+                        <th>Nº créditos</th>
+                        <th>Valor total aprobado</th>
+                        <th>% sobre total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for group in report.groups %}
+                    <tr>
+                        <td>{{ group.linea_credito }}</td>
+                        <td>{{ group.estado }}</td>
+                        <td>{{ group.num_creditos }}</td>
+                        <td>${{ "{:,.0f}".format(group.valor_total) }}</td>
+                        <td>{{ "%.2f"|format(group.porcentaje) }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="2"><strong>Total general</strong></td>
+                        <td><strong>{{ report.total_creditos }}</strong></td>
+                        <td><strong>${{ "{:,.0f}".format(report.total_valor) }}</strong></td>
+                        <td><strong>100%</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No se encontraron créditos para los filtros aplicados.</p>
+        {% endif %}
+    {% else %}
+    <p class="empty-state">Genere el reporte para visualizar el estado de la cartera.</p>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Agencias — COOVALLUNA{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <header class="panel-header">
+        <h2>Registrar Agencia</h2>
+    </header>
+
+    <form method="POST" action="{{ url_for('admin_agencias') }}" class="agency-form">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="codigo">Código <span class="required">*</span></label>
+                <input
+                    type="text"
+                    id="codigo"
+                    name="codigo"
+                    value="{{ form_data.get('codigo', '') }}"
+                    placeholder="Ej: AG-001"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="nombre">Nombre <span class="required">*</span></label>
+                <input
+                    type="text"
+                    id="nombre"
+                    name="nombre"
+                    value="{{ form_data.get('nombre', '') }}"
+                    placeholder="Nombre de la agencia"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="direccion">Dirección</label>
+                <input
+                    type="text"
+                    id="direccion"
+                    name="direccion"
+                    value="{{ form_data.get('direccion', '') }}"
+                    placeholder="Dirección física"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="municipio">Municipio <span class="required">*</span></label>
+                <input
+                    type="text"
+                    id="municipio"
+                    name="municipio"
+                    value="{{ form_data.get('municipio', '') }}"
+                    placeholder="Municipio"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="telefono">Teléfono</label>
+                <input
+                    type="text"
+                    id="telefono"
+                    name="telefono"
+                    value="{{ form_data.get('telefono', '') }}"
+                    placeholder="Número de contacto"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="fecha_apertura">Fecha de apertura <span class="required">*</span></label>
+                <input
+                    type="date"
+                    id="fecha_apertura"
+                    name="fecha_apertura"
+                    value="{{ form_data.get('fecha_apertura', '') }}"
+                    required
+                >
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-save">Guardar</button>
+    </form>
+</section>
+
+<section class="panel">
+    <header class="panel-header">
+        <h2>Agencias registradas</h2>
+    </header>
+
+    {% if agencies %}
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Dirección</th>
+                    <th>Municipio</th>
+                    <th>Teléfono</th>
+                    <th>Fecha apertura</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for agency in agencies %}
+                <tr>
+                    <td>{{ agency.codigo }}</td>
+                    <td>{{ agency.nombre }}</td>
+                    <td>{{ agency.direccion or '—' }}</td>
+                    <td>{{ agency.municipio }}</td>
+                    <td>{{ agency.telefono or '—' }}</td>
+                    <td>{{ agency.fecha_apertura }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No hay agencias registradas aún.</p>
+    {% endif %}
+</section>
+{% endblock %}

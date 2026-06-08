@@ -1,0 +1,100 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Bitácora — COOVALLUNA{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <header class="panel-header">
+        <h2>Consultar Bitácora</h2>
+    </header>
+
+    <form method="POST" action="{{ url_for('admin_bitacora') }}" class="agency-form">
+        <div class="filter-grid">
+            <div class="form-group">
+                <label for="fecha_desde">Fecha desde</label>
+                <input
+                    type="date"
+                    id="fecha_desde"
+                    name="fecha_desde"
+                    value="{{ filters.fecha_desde }}"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="fecha_hasta">Fecha hasta</label>
+                <input
+                    type="date"
+                    id="fecha_hasta"
+                    name="fecha_hasta"
+                    value="{{ filters.fecha_hasta }}"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="usuario">Usuario</label>
+                <select id="usuario" name="usuario">
+                    <option value="">Todos</option>
+                    {% for user in usuarios %}
+                    <option value="{{ user }}"
+                        {% if filters.usuario == user %}selected{% endif %}>
+                        {{ user }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="operacion">Tipo de operación</label>
+                <select id="operacion" name="operacion">
+                    <option value="">Todas</option>
+                    {% for value, label in operaciones.items() %}
+                    <option value="{{ value }}"
+                        {% if filters.operacion == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-save">Filtrar</button>
+    </form>
+</section>
+
+<section class="panel">
+    <header class="panel-header">
+        <h2>Consulta del filtrado</h2>
+    </header>
+
+    {% if filtered %}
+        {% if entries %}
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Fecha y hora</th>
+                        <th>Usuario</th>
+                        <th>Operación</th>
+                        <th>Dato afectado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in entries %}
+                    <tr>
+                        <td>{{ entry.fecha_hora }}</td>
+                        <td>{{ entry.usuario }}</td>
+                        <td>{{ entry.operacion_label }}</td>
+                        <td>{{ entry.dato_afectado }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No se encontraron registros para los filtros aplicados.</p>
+        {% endif %}
+    {% else %}
+    <p class="empty-state">Aplique filtros para consultar la bitácora del sistema.</p>
+    {% endif %}
+</section>
+{% endblock %}

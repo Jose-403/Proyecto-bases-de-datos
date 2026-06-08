@@ -1,0 +1,72 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Supervisión — COOVALLUNA{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <header class="panel-header">
+        <h2>Asignar Supervisión</h2>
+    </header>
+
+    <form method="POST" action="{{ url_for('admin_supervision') }}" class="agency-form">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="supervisor_cedula">Supervisor <span class="required">*</span></label>
+                <select id="supervisor_cedula" name="supervisor_cedula" required>
+                    <option value="">Seleccione un supervisor</option>
+                    {% for employee in employees %}
+                    <option value="{{ employee.cedula }}"
+                        {% if form_data.get('supervisor_cedula') == employee.cedula %}selected{% endif %}>
+                        {{ employee.display_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="subordinate_cedula">Empleado supervisado <span class="required">*</span></label>
+                <select id="subordinate_cedula" name="subordinate_cedula" required>
+                    <option value="">Seleccione un empleado</option>
+                    {% for employee in employees %}
+                    <option value="{{ employee.cedula }}"
+                        {% if form_data.get('subordinate_cedula') == employee.cedula %}selected{% endif %}>
+                        {{ employee.display_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        {% if not employees %}
+        <p class="form-warning">
+            Debe registrar al menos dos empleados antes de asignar supervisión.
+        </p>
+        {% elif employees|length < 2 %}
+        <p class="form-warning">
+            Se requieren al menos dos empleados para establecer una relación de supervisión.
+        </p>
+        {% endif %}
+
+        <button type="submit" class="btn btn-save"
+            {% if employees|length < 2 %}disabled{% endif %}>
+            Guardar
+        </button>
+    </form>
+</section>
+
+<section class="panel">
+    <header class="panel-header">
+        <h2>Jerarquía actual</h2>
+    </header>
+
+    {% if hierarchy %}
+    <div class="hierarchy-tree">
+        {% for root in hierarchy %}
+            {% include "admin/_hierarchy_node.html" %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-state">No hay relaciones de supervisión registradas aún.</p>
+    {% endif %}
+</section>
+{% endblock %}

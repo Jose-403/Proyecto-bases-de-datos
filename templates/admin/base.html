@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}COOVALLUNA{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body class="admin-body">
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="brand">Coovalluna</h1>
+                <p class="role-label">Administrador</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <p class="nav-section">Administración</p>
+                <a href="{{ url_for('admin_agencias') }}"
+                   class="nav-link {% if active_page == 'agencias' %}active{% endif %}">
+                    Agencias
+                </a>
+                <a href="{{ url_for('admin_empleados') }}"
+                   class="nav-link {% if active_page == 'empleados' %}active{% endif %}">
+                    Empleados
+                </a>
+                <a href="{{ url_for('admin_supervision') }}"
+                   class="nav-link {% if active_page == 'supervision' %}active{% endif %}">
+                    Supervisión
+                </a>
+                <a href="{{ url_for('admin_asociados') }}"
+                   class="nav-link {% if active_page == 'asociados' %}active{% endif %}">
+                    Asociados
+                </a>
+                <a href="{{ url_for('admin_usuarios') }}"
+                   class="nav-link {% if active_page == 'usuarios' %}active{% endif %}">
+                    Usuarios sistema
+                </a>
+
+                <p class="nav-section">Reportes</p>
+                <a href="{{ url_for('admin_estado_cartera') }}"
+                   class="nav-link {% if active_page == 'estado_cartera' %}active{% endif %}">
+                    Estado cartera
+                </a>
+                <a href="{{ url_for('admin_bitacora') }}"
+                   class="nav-link {% if active_page == 'bitacora' %}active{% endif %}">
+                    Bitácora
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="{{ url_for('logout') }}" class="nav-link logout-link">Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="admin-messages">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

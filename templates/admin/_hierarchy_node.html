@@ -1,0 +1,15 @@
+<div class="hierarchy-node level-{{ root.level }}">
+    <div class="hierarchy-bar">
+        <span class="hierarchy-name">{{ root.nombre }}</span>
+        <span class="hierarchy-meta">{{ root.cargo }} · {{ root.agencia }}</span>
+    </div>
+    {% if root.children %}
+    <div class="hierarchy-children">
+        {% for child in root.children %}
+            {% with root=child %}
+                {% include "admin/_hierarchy_node.html" %}
+            {% endwith %}
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>

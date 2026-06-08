@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Panel principal{% endblock %}
+
+{% block content %}
+<section class="card dashboard">
+    <h1>Panel principal</h1>
+    <p class="subtitle">Has iniciado sesión correctamente.</p>
+
+    <div class="user-badge">
+        <span>Usuario activo:</span>
+        <strong>{{ username }}</strong>
+    </div>
+
+    <div class="user-badge">
+        <span>Perfil:</span>
+        <strong>{{ role_label }}</strong>
+    </div>
+
+    <p class="hint">Las funciones de este perfil se habilitarán próximamente.</p>
+
+    <a href="{{ url_for('logout') }}" class="btn btn-secondary">Cerrar sesión</a>
+</section>
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Usuarios sistema — COOVALLUNA{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <header class="panel-header">
+        <h2>Crear usuario de sistema</h2>
+    </header>
+
+    <form method="POST" action="{{ url_for('admin_usuarios') }}" class="agency-form search-form">
+        <div class="form-group">
+            <label for="email">Correo electrónico <span class="required">*</span></label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                value="{{ form_data.get('email', '') }}"
+                placeholder="usuario@coovalluna.com"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="role">Perfil <span class="required">*</span></label>
+            <select id="role" name="role" required>
+                <option value="">Seleccione un perfil</option>
+                {% for value, label in system_roles.items() %}
+                <option value="{{ value }}"
+                    {% if form_data.get('role') == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-save">Crear</button>
+    </form>
+
+    {% if temp_password %}
+    <div class="temp-password-box">
+        <p><strong>Contraseña temporal generada:</strong></p>
+        <code>{{ temp_password }}</code>
+        <p class="temp-password-hint">El usuario deberá cambiarla en su primer inicio de sesión.</p>
+    </div>
+    {% endif %}
+</section>
+
+<section class="panel">
+    <header class="panel-header">
+        <h2>Usuarios registrados</h2>
+    </header>
+
+    {% if users %}
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Correo</th>
+                    <th>Perfil</th>
+                    <th>Cambio contraseña</th>
+                    <th>Fecha creación</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role_label }}</td>
+                    <td>
+                        {% if user.must_change_password %}
+                            Pendiente
+                        {% else %}
+                            Completado
+                        {% endif %}
+                    </td>
+                    <td>{{ user.created_at }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No hay usuarios del sistema registrados.</p>
+    {% endif %}
+</section>
+{% endblock %}
