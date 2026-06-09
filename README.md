@@ -1,6 +1,6 @@
 # COOVALLUNA — Sistema de gestión
 
-Aplicación web en **Python + Flask** conectada a **PostgreSQL** mediante **psycopg2** (sin ORM). Todas las consultas SQL están escritas a mano en `database.py` usando sentencias parametrizadas.
+Aplicación web en **Python + Flask** conectada a **PostgreSQL** mediante **psycopg2** (sin ORM).
 
 ## Requisitos
 
