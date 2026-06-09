@@ -39,9 +39,21 @@
                 </a>
 
                 <p class="nav-section">Reportes</p>
+                <a href="{{ url_for('admin_reporte_asociados') }}"
+                   class="nav-link {% if active_page == 'reporte_asociados' %}active{% endif %}">
+                    Asociados por estado
+                </a>
                 <a href="{{ url_for('admin_estado_cartera') }}"
                    class="nav-link {% if active_page == 'estado_cartera' %}active{% endif %}">
                     Estado cartera
+                </a>
+                <a href="{{ url_for('admin_productividad_asesores') }}"
+                   class="nav-link {% if active_page == 'productividad_asesores' %}active{% endif %}">
+                    Productividad asesores
+                </a>
+                <a href="{{ url_for('admin_codeudoria_activa') }}"
+                   class="nav-link {% if active_page == 'codeudoria_activa' %}active{% endif %}">
+                    Codeudoría activa
                 </a>
                 <a href="{{ url_for('admin_bitacora') }}"
                    class="nav-link {% if active_page == 'bitacora' %}active{% endif %}">
