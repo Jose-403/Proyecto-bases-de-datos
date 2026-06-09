@@ -1,0 +1,99 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Asociados por estado y agencia — COOVALLUNA{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <header class="panel-header">
+        <h2>Listado de asociados por estado y agencia</h2>
+    </header>
+
+    <form method="POST" action="{{ url_for('admin_reporte_asociados') }}" class="agency-form">
+        <div class="filter-grid portfolio-filters">
+            <div class="form-group">
+                <label for="estado">Estado</label>
+                <select id="estado" name="estado">
+                    <option value="">Todos los estados</option>
+                    {% for key, label in estados_vinculacion.items() %}
+                    <option value="{{ key }}" {% if filters.estado == key %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="codigo_agencia">Agencia (cuentas de ahorro)</label>
+                <select id="codigo_agencia" name="codigo_agencia">
+                    <option value="">Todas las agencias</option>
+                    {% for agency in agencies %}
+                    <option value="{{ agency.codigo }}"
+                        {% if filters.codigo_agencia == agency.codigo %}selected{% endif %}>
+                        {{ agency.codigo }} — {{ agency.nombre }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="report-actions">
+            <button type="submit" class="btn btn-save">Generar reporte</button>
+            {% if report and not report.error %}
+            <a href="{{ url_for('admin_reporte_asociados_export_csv', **filters) }}"
+               class="btn btn-export">Exportar CSV</a>
+            <a href="{{ url_for('admin_reporte_asociados_export_pdf', **filters) }}"
+               class="btn btn-export">Exportar PDF</a>
+            {% else %}
+            <button type="button" class="btn btn-export" disabled>Exportar CSV</button>
+            <button type="button" class="btn btn-export" disabled>Exportar PDF</button>
+            {% endif %}
+        </div>
+    </form>
+</section>
+
+<section class="panel">
+    <header class="panel-header">
+        <h2>Resultado</h2>
+    </header>
+
+    {% if report and not report.error %}
+        {% if report.rows %}
+        <p class="report-meta">Generado: {{ report.generated_at }}</p>
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Cédula</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Estado</th>
+                        <th>Fecha afiliación</th>
+                        <th>Tipo</th>
+                        <th>Nº cuentas</th>
+                        <th>Nº créditos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in report.rows %}
+                    <tr>
+                        <td>{{ row.cedula_asociado }}</td>
+                        <td>{{ row.primer_nombre }}</td>
+                        <td>{{ row.apellido }}</td>
+                        <td>{{ row.estado_label }}</td>
+                        <td>{{ row.fecha_ingreso }}</td>
+                        <td>{{ row.tipo_label }}</td>
+                        <td>{{ row.nro_cuentas }}</td>
+                        <td>{{ row.nro_creditos }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty-state">No se encontraron asociados para los filtros aplicados.</p>
+        {% endif %}
+    {% else %}
+    <p class="empty-state">Genere el reporte para visualizar el listado de asociados.</p>
+    {% endif %}
+</section>
+{% endblock %}
