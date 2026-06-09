@@ -1,0 +1,59 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Codeudoría activa — COOVALLUNA{% endblock %}
+
+{% block content %}
+<section class="panel">
+    <header class="panel-header">
+        <h2>Asociados con codeudoría activa</h2>
+    </header>
+
+    <div class="report-actions">
+        <a href="{{ url_for('admin_codeudoria_activa_export_csv') }}"
+           class="btn btn-export">Exportar CSV</a>
+    </div>
+</section>
+
+<section class="panel">
+    <header class="panel-header">
+        <h2>Resultado</h2>
+    </header>
+
+    <p class="report-meta">Generado: {{ report.generated_at }}</p>
+
+    {% if report.rows %}
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Cédula titular</th>
+                    <th>Titular</th>
+                    <th>Cédula codeudor</th>
+                    <th>Codeudor</th>
+                    <th>Radicado</th>
+                    <th>Valor aprobado</th>
+                    <th>Estado crédito</th>
+                    <th>Fecha firma</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in report.rows %}
+                <tr>
+                    <td>{{ row.cedula_titular }}</td>
+                    <td>{{ row.titular_nombre }}</td>
+                    <td>{{ row.cedula_codeudor }}</td>
+                    <td>{{ row.codeudor_nombre }}</td>
+                    <td>{{ row.numero_radicado }}</td>
+                    <td>${{ "{:,.0f}".format(row.vlr_aprobado) }}</td>
+                    <td>{{ row.estado_label }}</td>
+                    <td>{{ row.fecha_firma }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state">No hay créditos con codeudor registrados.</p>
+    {% endif %}
+</section>
+{% endblock %}
